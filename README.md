@@ -1,5 +1,5 @@
 # BOTBot
-(Broadcast On Topics Bot)
+The **Broadcast On Topics Bot**
 
 Bot no telegram para inscrição e publicação de mensagens em tópicos de forma anônima.
 
@@ -14,8 +14,8 @@ Bot no telegram para inscrição e publicação de mensagens em tópicos de form
     - [ ] Provisionamento de FaaS com Serverless
     - [ ] Provisionamento de infra com Terraform
 4. [ ] CI/CD
-    - [ ] Automatizar execução de testes unitários
-    - [ ] Autmatizar deploy de nova versão
+    - [ ] Execução automática de testes unitários
+    - [ ] Deploy automático de novas versões
 5. [ ] Novos Recursos
     - [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
     - [ ] Visualizar últimas 5 mensagens de um tópico
