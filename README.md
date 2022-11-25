@@ -17,7 +17,7 @@ Bot no telegram para inscrição e publicação de mensagens em tópicos de form
     - [ ] Automatizar execução de testes unitários
     - [ ] Autmatizar deploy de nova versão
 5. [ ] Novos Recursos
-    [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
-    [ ] Visualizar últimas 5 mensagens de um tópico
-    [ ] Responder a mensagens de tópicos
-    [ ] Assinar mensagens
+    - [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
+    - [ ] Visualizar últimas 5 mensagens de um tópico
+    - [ ] Responder a mensagens de tópicos
+    - [ ] Assinar mensagens
