@@ -1,13 +1,18 @@
 import json
 import requests
+import logging
 from layers.python.awsHelper import get_token
 
 def lambda_handler(event, ctx):
-    #TODO confirmar formato do objeto event
-    for letter in event:
-        botName = letter['botName']
-        textMessage = letter['textMessage']
-        chatId = letter['chatId']
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.info("recebido evento para evnio de mensagem com o payload {}".format(event))
+    records=event['Records']
+    for record in records:
+        body = json.loads(record['body'])
+        botName = body['botName']
+        textMessage = body['textMessage']
+        chatId = body['chatId']
         methodName = 'sendMessage'
 
         botToken = get_token(botName)
