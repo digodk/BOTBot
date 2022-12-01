@@ -3,11 +3,11 @@ import logging
 from layers.python.awsHelper import publish_sns_topic
 
 def lambda_handler(event, ctx):
-    sqs_payload = json.loads(event['Records'])
+    records = json.loads(event['Records'])
     
-    logging.info("recebido evento para broadcast com o payload {}".format(sqs_payload))
+    logging.info("recebido evento para broadcast com o payload {}".format(records))
 
-    for record in sqs_payload:
+    for record in records:
         snsMessage = record['body']
         topic = snsMessage['Subject']
         userMessage = snsMessage['Message']

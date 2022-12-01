@@ -43,13 +43,18 @@ def subscribe_chat_to_topic(topic, chatId):
     response = client.subscribe(
         TopicArn=topicArn,
         Protocol='sqs',
-        Endpoint=queueArn
+        Endpoint=queueArn,
+        Attributes={
+            'ReturnSubscriptionArn': 'true'
+        }
     )
     return response['SubscriptionArn']
 
-def unsubscribe_chat_from_topic(topic, chat_id):
-    #TODO
-    return True
+def unsubscribe_chat_from_topic(topic, chatId):
+    subscriptionArn = subscribe_chat_to_topic(topic, chatId)
+    client = boto3.client('sns')
+    response = client.unsubscribe(subscriptionArn)
+    return response
 
 def create_topic_sns(topic):
     client = boto3.client('sns')
@@ -100,9 +105,9 @@ def send_telegram_message(chatId, message):
     return True
 
 def broadcast_message(chatId, message, topic):
-    #TODO se tópico não existe, criar ele
+    create_topic_sns(topic)
     payload = {
-        'user_message':mssage,
+        'user_message':message,
         'chat_id':chatId
     }
     response = publish_sns_topic(chatId, payload, topic, topic)

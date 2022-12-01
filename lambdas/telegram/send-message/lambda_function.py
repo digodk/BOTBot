@@ -23,4 +23,4 @@ def lambda_handler(event, ctx):
             json=json.dumps(options)
             ).json
 
-    return True
+    return response
