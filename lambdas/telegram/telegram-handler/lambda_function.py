@@ -1,7 +1,7 @@
 import json
 import re
 import logging
-from layers.python.awsHelper import (broadcast_message, send_telegram_message,
+from awsHelper import (broadcast_message, send_telegram_message,
                                       subscribe_chat_to_topic, unsubscribe_chat_from_topic)
 
 
@@ -20,7 +20,8 @@ def lambda_handler(event, ctx):
             response = "Não entendi seu comando!"
             #Comando para inscrever usuário
             if re.match(r'^/subs ?\n?', text):
-                topic = re.sub(r'^/subs ?\n?','', text, 0).lstrip().lower
+                topic = re.sub(r'^/subs ?\n?','', text, 0).lstrip().lower()
+                logger.info("Identificado o comando para inscrever no tópico {}".format(topic))
                 if re.match(r'^[a-z0-9_]$', topic):
                     subscribe_chat_to_topic(topic, chatId)
                     response = 'Ok! Você foi inscrito no tópico {}'.format(topic)
@@ -51,5 +52,9 @@ def lambda_handler(event, ctx):
                     response = 'Não consegui entender sua mensgem!'
             else:
                 response = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
-
-        if response: send_telegram_message(chatId, response)
+        if response: 
+            responsePayload = {
+                'botName':'configurator',
+                'textMessage':response
+            }
+            send_telegram_message(chatId, responsePayload)

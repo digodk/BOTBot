@@ -1,6 +1,6 @@
 import json
 import logging
-from layers.python.awsHelper import publish_sns_topic
+from awsHelper import publish_sns_topic
 
 def lambda_handler(event, ctx):
     logger = logging.getLogger()

@@ -1,7 +1,7 @@
 import json
 import requests
 import logging
-from layers.python.awsHelper import get_token
+from awsHelper import get_token
 
 def lambda_handler(event, ctx):
     logger = logging.getLogger()
