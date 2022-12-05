@@ -14,27 +14,36 @@ def lambda_handler(event, ctx):
     records=event['Records']
     for record in records:
         update = json.loads(record['body'])
-        
+
+        #TODO - Ignorar edição de mensagens
+
         #WIP Código temporário que ignora qualquer update que não seja uma mensagem de texto
         if not 'message' in update:
-            return True
+            return response
         
         message = update['message']
+
+        if not 'text' in message:
+            return response
+
         text = message['text']
         chatId = message['chat']['id']
         logger.info("Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
         if text[0] == '/':
             telegramResponse = "Não entendi seu comando!"
             if text == '/start':
-                #TODO - Expandir texto de introdução
-                telegramResponse = "Olá, eu sou o BOTBot!"
+                telegramResponse = "Olá, eu sou o BOTBot! \n" + \
+                    "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo: \n\n" + \
+                    "[\sub nome_do_tópico] para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _ \n\n" + \
+                    "[.nome_do_tópico sua mensagem] para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem."
             #Comando para inscrever usuário
-            if re.match(r'^/subs ?\n?', text):
-                topic = re.sub(r'^/subs ?\n?','', text, 0).lstrip().lower()
+            if re.match(r'^/sub ?\n?', text):
+                topic = re.sub(r'^/sub ?\n?','', text, 0).lstrip().lower()
                 logger.info("Identificado o comando para inscrever no tópico {}".format(topic))
                 if re.match(r'^[a-z0-9_]+$', topic):
                     subscribe_chat_to_topic(topic, chatId)
-                    telegramResponse = 'Ok! Você foi inscrito no tópico {}'.format(topic)
+                    telegramResponse = f'Ok! Você foi inscrito no tópico {topic}. Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' + \
+                        f'.{topic}\nmensagem enviada'
                 else:
                     logger.info('nome inválido de tópico')
                     telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
@@ -52,9 +61,10 @@ def lambda_handler(event, ctx):
             #Comando para transmitir uma mensagem
             match = re.search(r'^\.[a-z0-9_]+[ \n]+', text)
             if match:
-                topic = match.group(0).strip().lower()
+                topic = match.group(0).strip().lower()[1:]
                 topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
                 if topicMessage:
+                    logger.info("Transmitindo mensagem {} para tópico {}".format(topicMessage, topic))
                     payload = {
                         'text':topicMessage.strip()
                     }

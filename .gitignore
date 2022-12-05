@@ -1,4 +1,4 @@
 environment.json
 lambdas/telegram/telegram-handler/awsHelper.py
 lambdas/telegram/send-message/awsHelper.py
-lambdas/broadcast_user/awsHelper.py
+lambdas/broadcast-message/awsHelper.py
