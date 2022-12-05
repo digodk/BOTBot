@@ -4,7 +4,7 @@ The **Broadcast On Topics Bot**
 Bot no telegram para inscrição e publicação de mensagens em tópicos de forma anônima.
 
 ## Roadmap
-1. [ ] MVP (WIP)
+1. [x] MVP (WIP)
     - Inscrever-se e desinscrever-se de tópicos
     - Publicar mensagens de texto em tópicos
     - Receber mensagens de texto publicadas
