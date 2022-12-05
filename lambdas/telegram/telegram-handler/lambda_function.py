@@ -14,12 +14,20 @@ def lambda_handler(event, ctx):
     records=event['Records']
     for record in records:
         update = json.loads(record['body'])
+        
+        #WIP Código temporário que ignora qualquer update que não seja uma mensagem de texto
+        if not 'message' in update:
+            return True
+        
         message = update['message']
         text = message['text']
         chatId = message['chat']['id']
         logger.info("Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
         if text[0] == '/':
             telegramResponse = "Não entendi seu comando!"
+            if text == '/start':
+                #TODO - Expandir texto de introdução
+                telegramResponse = "Olá, eu sou o BOTBot!"
             #Comando para inscrever usuário
             if re.match(r'^/subs ?\n?', text):
                 topic = re.sub(r'^/subs ?\n?','', text, 0).lstrip().lower()
@@ -42,17 +50,18 @@ def lambda_handler(event, ctx):
 
         if text[0] == '.':
             #Comando para transmitir uma mensagem
-            topic = re.search(r'^\.[a-z0-9_]+[ \n]+', text)
-            if topic:
+            match = re.search(r'^\.[a-z0-9_]+[ \n]+', text)
+            if match:
+                topic = match.group(0).strip().lower()
                 topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
-                if not topicMessage == '':
+                if topicMessage:
                     payload = {
                         'text':topicMessage.strip()
                     }
-                    broadcast_message(chatId, payload, topic.strip())
+                    broadcast_message(chatId, payload, topic)
                     telegramResponse = 'Ok! Mensagem enviada!'
                 else:
-                    telegramResponse = 'Não consegui entender sua mensgem!'
+                    telegramResponse = 'Não consegui entender sua mensagem!'
             else:
                 telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
         if telegramResponse: 
