@@ -13,6 +13,7 @@ def lambda_handler(event, ctx):
     logger.info("Recebendo evento do telegram com o payload {}".format(event))
     records=event['Records']
     for record in records:
+        telegramResponse = "Não entendi seu comando!"
         update = json.loads(record['body'])
 
         #TODO - Ignorar edição de mensagens
@@ -30,12 +31,12 @@ def lambda_handler(event, ctx):
         chatId = message['chat']['id']
         logger.info("Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
         if text[0] == '/':
-            telegramResponse = "Não entendi seu comando!"
             if text == '/start':
-                telegramResponse = "Olá, eu sou o BOTBot! \n" + \
+                telegramResponse = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot) \n" + \
                     "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo: \n\n" + \
-                    "[\sub nome_do_tópico] para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _ \n\n" + \
-                    "[.nome_do_tópico sua mensagem] para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem."
+                    "/sub nome_do_topico\npara você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _ \n\n" + \
+                    "/unsub nome_topico\npara você se desinscrever de um tópico.\n\n" + \
+                    ".nome_do_topico sua mensagem de texto\npara enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem. \n\n"
             #Comando para inscrever usuário
             if re.match(r'^/sub ?\n?', text):
                 topic = re.sub(r'^/sub ?\n?','', text, 0).lstrip().lower()
@@ -50,8 +51,9 @@ def lambda_handler(event, ctx):
 
             #Comando para desinscrever-se
             if  re.match(r'^/unsub ?\n?', text):
-                topic = re.sub(r'^/unsub ?\n?','', text, 0).lstrip().lower
-                if re.match(r'^[a-z0-9_]$', topic): 
+                topic = re.sub(r'^/unsub ?\n?','', text, 0).lstrip().lower()
+                logger.info(f'Solicitada a desinscrição do chat {chatId} do tópico {topic}')
+                if re.match(r'^[a-z0-9_]+$', topic): 
                     unsubscribe_chat_from_topic(topic, chatId)
                     telegramResponse = 'Ok! Sua inscrição do tópico {} foi removida'.format(topic)
                 else:
