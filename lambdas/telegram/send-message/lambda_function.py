@@ -1,5 +1,5 @@
 import json
-import requests
+import urllib3
 import logging
 from awsHelper import get_token
 
@@ -14,18 +14,25 @@ def lambda_handler(event, ctx):
         textMessage = body['textMessage']
         chatId = body['chatId']
         methodName = 'sendMessage'
+        logger.info("Enviando mensagem usando bot: {} para chat: {}, método: {}, complemento: {}".format(botName, chatId, methodName, textMessage))
 
         botToken = get_token(botName)
         
         botUrl = 'https://api.telegram.org/bot{}/{}'.format(botToken, methodName)
+        http = urllib3.PoolManager()
         options = {
             'chat_id' : chatId,
             'text' : textMessage
         }
+        logger.info("Parâmetros do request. Url {}, Options: {}".format(botUrl, options))
         
-        response = requests.post(
+        r = http.request(
+            method='POST',
             url=botUrl,
-            json=json.dumps(options)
-            ).json
+            fields=options
+        )
 
+        response = json.loads(r.data.decode('utf-8'))
+
+        logger.info("Resposta do telegram: {}".format(response))
     return response

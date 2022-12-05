@@ -56,9 +56,5 @@ def lambda_handler(event, ctx):
             else:
                 telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
         if telegramResponse: 
-            responsePayload = {
-                'botName':'configurator',
-                'textMessage':telegramResponse
-            }
-            send_telegram_message(chatId, responsePayload)
+            send_telegram_message(chatId, telegramResponse, 'configurator')
     return response
