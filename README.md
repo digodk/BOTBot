@@ -8,11 +8,11 @@ Bot no telegram para inscrição e publicação de mensagens em tópicos de form
     - Inscrever-se e desinscrever-se de tópicos
     - Publicar mensagens de texto em tópicos
     - Receber mensagens de texto publicadas
-2. [ ] Testes Unitários
-    - Desenvolver testes unitários simulando ambiente de nuvem
-3. [ ] IaC
+2. [ ] IaC
     - [ ] Provisionamento de FaaS com Serverless
     - [ ] Provisionamento de infra com Terraform
+3. [ ] Testes Integrados (WIP)
+    - Desenvolver testes integrados simulando ambiente de nuvem
 4. [ ] CI/CD
     - [ ] Execução automática de testes unitários
     - [ ] Deploy automático de novas versões

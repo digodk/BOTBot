@@ -10,13 +10,13 @@ response={
 def lambda_handler(event, ctx):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    logger.info("Recebendo evento do telegram com o payload {}".format(event))
+    logger.info('Recebendo evento do telegram com o payload {}'.format(event))
     records=event['Records']
     for record in records:
         telegramResponse = "Não entendi seu comando!"
         update = json.loads(record['body'])
 
-        #TODO - Ignorar edição de mensagens
+        #TODO - Ignorar updates de edição de mensagens
 
         #WIP Código temporário que ignora qualquer update que não seja uma mensagem de texto
         if not 'message' in update:
