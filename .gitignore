@@ -2,3 +2,10 @@ environment.json
 lambdas/telegram/telegram-handler/awsHelper.py
 lambdas/telegram/send-message/awsHelper.py
 lambdas/broadcast-message/awsHelper.py
+terraform/terraform.tfstate
+terraform/.terraform.lock.hcl
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/4.46.0/windows_amd64/terraform-provider-aws_v4.46.0_x5.exe
+lambdas/broadcast_message/awsHelper.py
+lambdas/broadcast_message/lambda_function.py
+lambdas/telegram/send_message/awsHelper.py
+lambdas/telegram/telegram_handler/awsHelper.py
