@@ -13,34 +13,40 @@ provider "aws" {
   region  = "sa-east-1"
 }
 
-resource "aws_api_gateway_rest_api" "telegram-webhook" {
+resource "aws_api_gateway_rest_api" "telegramWebhook" {
     name = "telegram"
 }
 
-resource "aws_api_gateway_resource" "config-bot" {
-    rest_api_id = aws_api_gateway_rest_api.telegram-webhook.id
-    parent_id = aws_api_gateway_rest_api.telegram-webhook.root_resource_id
+resource "aws_api_gateway_resource" "configBot" {
+    rest_api_id = aws_api_gateway_rest_api.telegramWebhook.id
+    parent_id = aws_api_gateway_rest_api.telegramWebhook.root_resource_id
     path_part = "config-bot"
 }
 
-resource "aws_api_gateway_method" "config-bot-post" {
-  rest_api_id = aws_api_gateway_rest_api.telegram-webhook.id
-  resource_id = aws_api_gateway_resource.config-bot.id
+resource "aws_api_gateway_method" "configBotPost" {
+  rest_api_id = aws_api_gateway_rest_api.telegramWebhook.id
+  resource_id = aws_api_gateway_resource.configBot.id
   http_method = "POST"
   authorization = "NONE"
 }
 
 resource "aws_iam_role" "apiLambdaIntegrationRole" {
-  
+  assume_role_policy = "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"apigateway.amazonaws.com\"},\"Sid\":\"\"}],\"Version\":\"2012-10-17\"}"
+  description = "Allows API Gateway to push logs to CloudWatch Logs and send messages do telegram-updates queue"
+  name = "AWSRoleForAPIGateway"
+  managed_policy_arns = [
+    "arn:aws:iam::020664526196:policy/SQSTelegram-UpdatesSendMessagePolicy",
+    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  ]
 }
 
-resource "aws_api_gateway_integration" "config-bot-post-integration" {
-  rest_api_id = aws_api_gateway_rest_api.telegram-webhook.id
-  resource_id = aws_api_gateway_resource.config-bot.id
-  http_method = aws_api_gateway_method.config-bot-post.http_method
+resource "aws_api_gateway_integration" "configBotPostIntegration" {
+  rest_api_id = aws_api_gateway_rest_api.telegramWebhook.id
+  resource_id = aws_api_gateway_resource.configBot.id
+  http_method = aws_api_gateway_method.configBotPost.http_method
   type = "AWS"
   integration_http_method = "POST"
-  credentials = "arn:aws:iam::020664526196:role/AWSRoleForAPIGateway"
+  credentials = aws_iam_role.apiLambdaIntegrationRole.arn
   request_parameters = {
               "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
             }

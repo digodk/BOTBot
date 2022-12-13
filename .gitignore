@@ -9,3 +9,4 @@ lambdas/broadcast_message/awsHelper.py
 lambdas/broadcast_message/lambda_function.py
 lambdas/telegram/send_message/awsHelper.py
 lambdas/telegram/telegram_handler/awsHelper.py
+terraform/terraform.tfstate.backup

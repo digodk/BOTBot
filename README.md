@@ -8,10 +8,10 @@ Bot no telegram para inscrição e publicação de mensagens em tópicos de form
     - Inscrever-se e desinscrever-se de tópicos
     - Publicar mensagens de texto em tópicos
     - Receber mensagens de texto publicadas
-2. [ ] IaC
-    - [ ] Provisionamento de FaaS com Serverless
-    - [ ] Provisionamento de infra com Terraform
-3. [ ] Testes Integrados (WIP)
+2. [ ] IaC (WIP)
+    - [ ] Provisionamento de recursos específicos da aplicação com Serverless
+    - [ ] Provisionamento de recursos mais abrangentes com Terraform
+3. [ ] Testes Integrados
     - Desenvolver testes integrados simulando ambiente de nuvem
 4. [ ] CI/CD
     - [ ] Execução automática de testes unitários
