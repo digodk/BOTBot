@@ -1,3 +1,15 @@
+local "region" {
+  default = "sa-east-1"
+}
+
+local "subscribers_table_name"{
+  default = "topic_subscribers"
+}
+
+local "telegram_api_name"{
+  default = "telegram"
+}
+
 terraform {
   required_providers {
     aws = {
@@ -10,11 +22,11 @@ terraform {
 }
 
 provider "aws" {
-  region  = "sa-east-1"
+  region  = var.region
 }
 
 resource "aws_api_gateway_rest_api" "telegramWebhook" {
-    name = "telegram"
+    name = var.telegram_api_name
 }
 
 resource "aws_api_gateway_resource" "configBot" {
@@ -55,4 +67,26 @@ resource "aws_api_gateway_integration" "configBotPostIntegration" {
             }
   uri = "arn:aws:apigateway:sa-east-1:sqs:path/020664526196/telegram-updates"
 }
+
+resource "aws_dynamodb_table" "topic_subscribers" {
+  name = var.subscribers_table_name
+  hash_key = "topic"
+  range_key = "subscriber_id"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "topic"
+    type = "S"
+  }
+
+  attribute {
+    name = "subscriber_id"
+    type = "S"
+  }
+
+  tags = {
+    Name = var.subscribers_table_name
+  }
+}
+
 
