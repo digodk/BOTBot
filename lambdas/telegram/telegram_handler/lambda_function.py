@@ -4,18 +4,19 @@ import logging
 import boto3
 import botocore
 import os
+from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('topic_subscribers')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-response = {
-    'stausCode': 200
-}
-
 
 def lambda_handler(event, ctx):
+    response = {
+        'stausCode': 200
+    }
+        
     logger.info('Recebendo evento do telegram com o payload {}'.format(event))
     records = event['Records']
     for record in records:
@@ -54,29 +55,29 @@ def lambda_handler(event, ctx):
                 topic = re.sub(r'^/sub ?\n?', '', text, 0).lstrip().lower()
                 logger.info(
                     "Identificado o comando para inscrever no tópico {}".format(topic))
-                if re.match(r'^[a-z0-9_]+$', topic):
+                if re.match(r'^[a-z0-9_]{1,32}$', topic):
                     add_subscriber(topic, chatId)
                     telegramResponse = f'Ok! Você foi inscrito no tópico {topic}. Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' + \
                         f'.{topic}\nmensagem recebida'
                 else:
                     logger.info('nome inválido de tópico')
-                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
+                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
 
             # Unsubscribe from topic
             if re.match(r'^/unsub ?\n?', text):
                 topic = re.sub(r'^/unsub ?\n?', '', text, 0).lstrip().lower()
                 logger.info(
                     f'Solicitada a desinscrição do chat {chatId} do tópico {topic}')
-                if re.match(r'^[a-z0-9_]+$', topic):
+                if re.match(r'^[a-z0-9_]{1,32}$', topic):
                     remove_subscriber(topic, chatId)
                     telegramResponse = 'Ok! Sua inscrição do tópico {} foi removida'.format(
                         topic)
                 else:
-                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
+                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
 
-        if text[0] == '.':
+        if text.startswith('.'):
             # Broadcast a message
-            match = re.search(r'^\.[a-z0-9_]+[ \n]+', text)
+            match = re.search(r'^\.[a-z0-9_]{1,32}[ \n]+', text)
             if match:
                 topic = match.group(0).strip().lower()[1:]
                 topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
@@ -91,7 +92,7 @@ def lambda_handler(event, ctx):
                 else:
                     telegramResponse = 'Não consegui entender sua mensagem!'
             else:
-                telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _'
+                telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
         if telegramResponse:
             send_telegram_message(chatId, telegramResponse, 'configurator')
     return response
@@ -106,7 +107,7 @@ def add_subscriber(topic, chat_id):
             }
         )
     except botocore.exceptions.ClientError as e:
-        print(e.response['Error']['Message'])
+        logger.error(e.response['Error']['Message'])
     else:
         if 'Item' not in response:
             table.put_item(
@@ -150,54 +151,34 @@ def remove_subscriber(topic, chat_id):
 
 
 def broadcast_message(chatId, message, topic):
-    logger.info('Divulgando mensagem {} para o tópico {}, vinda do chat {}'.format(
-        message, topic, chatId))
-    payload = {
-        'topic': topic,
-        'user_message': message,
-        'chat_id': chatId
+    logger.info(f'Divulgando mensagem {message} para o tópico {topic}, vinda do chat {chatId}')
+
+    subscribers = get_subscribers(topic)
+    if len(subscribers) == 0:
+        return
+    
+    payload={
+        'textMessage': f'.{topic}: {message}',
+        'botName': 'configurator'
     }
-    response = publish_sns_topic(chatId, payload, "broadcast")
+
+    response = send_sqs_message(subscribers, payload, 'outgoing-messages')
     return response
 
-
-def publish_sns_topic(chatId, payload, snsName="send-telegram-response"):
-    sns = boto3.client('sns')
-
-    awsReg = os.environ.get('AWS_REGION')
-
-    awsAccount = os.environ.get('AWS_ACCOUNT_ID')
-
-    logger.info('Publicando mensagem: {} no sns: {}'.format(payload, snsName))
-
-    payload['chatId'] = chatId
-
-    jhon = json.dumps(payload)
-
-    logger.info('Publicando Json : {} no sns: {}'.format(jhon, snsName))
-
-    arnSNS = 'arn:aws:sns:{}:{}:{}'.format(
-        awsReg, awsAccount, snsName)
-
-    logger.info("Assim ficou a string do arnSNS: {}".format(arnSNS))
-
-    response = sns.publish(TopicArn=arnSNS, Message=jhon)
-    logger.info("Essa foi a resposta da AWS {}".format(response))
-    return response
+def get_subscribers(topic):
+    try:
+        response = table.query(
+            KeyConditionExpression=Key('topic').eq(topic)
+        )
+    except botocore.exceptions.ClientError as e:
+        logger.error(e.response['Error']['Message'])
+        return []
+    else:
+        subscribers = [item['subscriber_id'] for item in response['Items']]
+        return subscribers
 
 
-def send_telegram_message(chatId, message, botName='configurator'):
-    logger.info('Publicando na fila de envio do telegram a mensagem {} para chatId {}'.format(
-        message, chatId))
-    payload = {
-        'botName': botName,
-        'textMessage': message
-    }
-    response = send_sqs_message(chatId, payload, 'outgoing-messages')
-    return response
-
-
-def send_sqs_message(chatId, payload, sqsName, topic=''):
+def send_sqs_message(recipients, payload, sqsName):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -209,16 +190,24 @@ def send_sqs_message(chatId, payload, sqsName, topic=''):
         QueueOwnerAWSAccountId=awsAccount
     )['QueueUrl']
 
-    payload['chatId'] = chatId
-    if topic != '':
-        payload['topic'] = topic
+    payload['recipients'] = recipients
 
     jhon = json.dumps(payload)
 
     logger.info(
-        'enviando para a fila: {} /n no url {} /n payload: {}'.format(sqsName, sqsUrl, jhon))
+        f'enviando para a fila: {sqsName} /n no url {sqsUrl} /n payload: {jhon}')
 
     response = sqs.send_message(
         QueueUrl=sqsUrl,
         MessageBody=jhon)
+    return response
+
+def send_telegram_message(chatId, message, botName='configurator'):
+
+    logger.info(f'Publicando na fila de envio do telegram a mensagem {message} para chatId {chatId}')
+    payload = {
+        'botName': botName,
+        'textMessage': message
+    }
+    response = send_sqs_message([chatId], payload, 'outgoing-messages')
     return response
