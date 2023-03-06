@@ -18,83 +18,81 @@ def lambda_handler(event, ctx):
     }
         
     logger.info('Recebendo evento do telegram com o payload {}'.format(event))
-    records = event['Records']
-    for record in records:
-        telegramResponse = "Não entendi seu comando!"
-        update = json.loads(record['body'])
+    telegramResponse = "Não entendi seu comando!"
+    update = json.loads(event['body'])
 
-        # If the update is about an edited message exit the function, discarding the update
-        if 'edited_message' in update:
-            return
+    # If the update is about an edited message exit the function, discarding the update
+    if 'edited_message' in update:
+        return
 
-        # WIP Temporary code that discards any update which is not a text message
-        # TODO Allow to broadcast media other than text
-        # TODO Include command to check subscriptions
-        if not 'message' in update:
-            return response
+    # WIP Temporary code that discards any update which is not a text message
+    # TODO Allow to broadcast media other than text
+    # TODO Include command to check subscriptions
+    if not 'message' in update:
+        return response
 
-        message = update['message']
+    message = update['message']
 
-        if not 'text' in message:
-            return response
+    if not 'text' in message:
+        return response
 
-        text = message['text']
-        chatId = message['chat']['id']
-        logger.info(
-            "Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
-        if text.startswith('/'):
-            if text == '/start':
-                telegramResponse = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot) \n" + \
-                    "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo: \n\n" + \
-                    "/sub nome_do_topico\npara você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _ \n\n" + \
-                    "/unsub nome_topico\npara você se desinscrever de um tópico.\n\n" + \
-                    ".nome_do_topico sua mensagem de texto\npara enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem. \n\n"
+    text = message['text']
+    chatId = message['chat']['id']
+    logger.info(
+        "Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
+    if text.startswith('/'):
+        if text == '/start':
+            telegramResponse = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot) \n" + \
+                "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo: \n\n" + \
+                "/sub nome_do_topico\npara você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _ \n\n" + \
+                "/unsub nome_topico\npara você se desinscrever de um tópico.\n\n" + \
+                ".nome_do_topico sua mensagem de texto\npara enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem. \n\n"
 
-            # Subscribe to topic
-            if re.match(r'^/sub ?\n?', text):
-                topic = re.sub(r'^/sub ?\n?', '', text, 0).lstrip().lower()
-                logger.info(
-                    "Identificado o comando para inscrever no tópico {}".format(topic))
-                if re.match(r'^[a-z0-9_]{1,32}$', topic):
-                    add_subscriber(topic, chatId)
-                    telegramResponse = f'Ok! Você foi inscrito no tópico {topic}. Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' + \
-                        f'.{topic}\nmensagem recebida'
-                else:
-                    logger.info('nome inválido de tópico')
-                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
+        # Subscribe to topic
+        if re.match(r'^/sub ?\n?', text):
+            topic = re.sub(r'^/sub ?\n?', '', text, 0).lstrip().lower()
+            logger.info(
+                "Identificado o comando para inscrever no tópico {}".format(topic))
+            if re.match(r'^[a-z0-9_]{1,32}$', topic):
+                add_subscriber(topic, chatId)
+                telegramResponse = f'Ok! Você foi inscrito no tópico {topic}. Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' + \
+                    f'.{topic}\nmensagem recebida'
+            else:
+                logger.info('nome inválido de tópico')
+                telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
 
-            # Unsubscribe from topic
-            if re.match(r'^/unsub ?\n?', text):
-                topic = re.sub(r'^/unsub ?\n?', '', text, 0).lstrip().lower()
-                logger.info(
-                    f'Solicitada a desinscrição do chat {chatId} do tópico {topic}')
-                if re.match(r'^[a-z0-9_]{1,32}$', topic):
-                    remove_subscriber(topic, chatId)
-                    telegramResponse = 'Ok! Sua inscrição do tópico {} foi removida'.format(
-                        topic)
-                else:
-                    telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
-
-        if text.startswith('.'):
-            # Broadcast a message
-            match = re.search(r'^\.[a-z0-9_]{1,32}[ \n]+', text)
-            if match:
-                topic = match.group(0).strip().lower()[1:]
-                topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
-                if topicMessage:
-                    logger.info("Transmitindo mensagem {} para tópico {}".format(
-                        topicMessage, topic))
-                    payload = {
-                        'text': topicMessage.strip()
-                    }
-                    broadcast_message(chatId, payload, topic)
-                    telegramResponse = 'Ok! Mensagem enviada!'
-                else:
-                    telegramResponse = 'Não consegui entender sua mensagem!'
+        # Unsubscribe from topic
+        if re.match(r'^/unsub ?\n?', text):
+            topic = re.sub(r'^/unsub ?\n?', '', text, 0).lstrip().lower()
+            logger.info(
+                f'Solicitada a desinscrição do chat {chatId} do tópico {topic}')
+            if re.match(r'^[a-z0-9_]{1,32}$', topic):
+                remove_subscriber(topic, chatId)
+                telegramResponse = 'Ok! Sua inscrição do tópico {} foi removida'.format(
+                    topic)
             else:
                 telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
-        if telegramResponse:
-            send_telegram_message(chatId, telegramResponse, 'configurator')
+
+    if text.startswith('.'):
+        # Broadcast a message
+        match = re.search(r'^\.[a-z0-9_]{1,32}[ \n]+', text)
+        if match:
+            topic = match.group(0).strip().lower()[1:]
+            topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
+            if topicMessage:
+                logger.info("Transmitindo mensagem {} para tópico {}".format(
+                    topicMessage, topic))
+                payload = {
+                    'text': topicMessage.strip()
+                }
+                broadcast_message(chatId, payload, topic)
+                telegramResponse = 'Ok! Mensagem enviada!'
+            else:
+                telegramResponse = 'Não consegui entender sua mensagem!'
+        else:
+            telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
+    if telegramResponse:
+        send_telegram_message(chatId, telegramResponse, 'configurator')
     return response
 
 
