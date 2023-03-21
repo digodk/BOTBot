@@ -16,7 +16,7 @@ def lambda_handler(event, ctx):
     response = {
         'stausCode': 200
     }
-        
+
     logger.info('Recebendo evento do telegram com o payload {}'.format(event))
     telegramResponse = "Não entendi seu comando!"
     update = json.loads(event['body'])
@@ -149,19 +149,21 @@ def remove_subscriber(topic, chat_id):
 
 
 def broadcast_message(chatId, message, topic):
-    logger.info(f'Divulgando mensagem {message} para o tópico {topic}, vinda do chat {chatId}')
+    logger.info(
+        f'Divulgando mensagem {message} para o tópico {topic}, vinda do chat {chatId}')
 
     subscribers = get_subscribers(topic)
     if len(subscribers) == 0:
         return
-    
-    payload={
+
+    payload = {
         'textMessage': f'.{topic}: {message}',
         'botName': 'configurator'
     }
 
     response = send_sqs_message(subscribers, payload, 'outgoing-messages')
     return response
+
 
 def get_subscribers(topic):
     try:
@@ -200,9 +202,11 @@ def send_sqs_message(recipients, payload, sqsName):
         MessageBody=jhon)
     return response
 
+
 def send_telegram_message(chatId, message, botName='configurator'):
 
-    logger.info(f'Publicando na fila de envio do telegram a mensagem {message} para chatId {chatId}')
+    logger.info(
+        f'Publicando na fila de envio do telegram a mensagem {message} para chatId {chatId}')
     payload = {
         'botName': botName,
         'textMessage': message
