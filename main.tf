@@ -44,20 +44,27 @@ data "archive_file" "lambdaTelegramHandler" {
   type = "zip"
 
   source_dir  = "${path.module}/lambdas/telegram/telegram-handler"
-  output_path = "${path.module}/telegram-handler.zip"
+  output_path = "${path.module}/lambdas/zip-file/telegram-handler.zip"
 }
 
-resource "aws_s3_bucket" "telegramHandlerBucket" {
-  bucket = "telegram-handler-bucket"
+data "archive_file" "lambdaSendMessage" {
+  type = "zip"
+
+  source_dir = "${path.module}/lambdas/telegram/send-message"
+  output_path = "${path.module}/lambdas/zip-file/send-message.zip"
+}
+
+resource "aws_s3_bucket" "lambdaBucket" {
+  bucket = "telegram-lambda-bucket"
 }
 
 resource "aws_s3_bucket_acl" "bucketACL" {
-  bucket = aws_s3_bucket.telegramHandlerBucket.id
+  bucket = aws_s3_bucket.lambdaBucket.id
   acl    = "private"
 }
 
 resource "aws_s3_object" "lambdaTelegramHandler" {
-  bucket = aws_s3_bucket.telegramHandlerBucket.id
+  bucket = aws_s3_bucket.lambdaBucket.id
 
   key    = "telegram-handler.zip"
   source = data.archive_file.lambdaTelegramHandler.output_path
@@ -69,7 +76,7 @@ resource "aws_s3_object" "lambdaTelegramHandler" {
 resource "aws_lambda_function" "telegramHandler" {
   function_name = "telegram-handler"
 
-  s3_bucket = aws_s3_bucket.telegramHandlerBucket.id
+  s3_bucket = aws_s3_bucket.lambdaBucket.id
   s3_key = aws_s3_object.lambdaTelegramHandler.key
 
   runtime = "python3.9"
