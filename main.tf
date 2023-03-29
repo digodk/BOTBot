@@ -72,6 +72,14 @@ resource "aws_s3_object" "lambdaTelegramHandler" {
   etag = filemd5(data.archive_file.lambdaTelegramHandler.output_path)
 }
 
+resource "aws_s3_object" "lambdaSendMessage" {
+  bucket = aws_s3_bucket.lambdaBucket.id
+
+  key    = "send-message.zip"
+  source = data.archive_file.lambdaSendMessage.output_path
+
+  etag = filemd5(data.archive_file.lambdaSendMessage.output_path)
+}
 
 resource "aws_lambda_function" "telegramHandler" {
   function_name = "telegram-handler"
@@ -84,10 +92,44 @@ resource "aws_lambda_function" "telegramHandler" {
 
   source_code_hash = data.archive_file.lambdaTelegramHandler.output_base64sha256
 
-  role = aws_iam_role.lambdaExec.arn
+  role = aws_iam_role.telegramHandlerRole.arn
 }
 
-resource "aws_iam_role" "lambdaExec" {
+resource "aws_lambda_function" "sendMessage" {
+  function_name = "send-message"
+
+  s3_bucket = aws_s3_bucket.lambdaBucket.id
+  s3_key = aws_s3_object.lambdaSendMessage.key
+
+  runtime = "python3.9"
+  handler = "lambda_function.lambda_handler"
+
+  source_code_hash = data.archive_file.lambdaSendMessage.output_base64sha256
+
+  role = aws_iam_role.sendMessageRole.arn
+}
+
+resource "aws_iam_role" "sendMessageRole" {
+  name = "send-message-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Sid    = ""
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+      }
+    ]
+  })
+  managed_policy_arns = [
+    "arn:aws:iam::020664526196:policy/SQSPolicyForLambdaExecution",
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+  ]
+}
+
+resource "aws_iam_role" "telegramHandlerRole" {
   name = "telegram-handler-role"
 
   assume_role_policy = jsonencode({
