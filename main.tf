@@ -197,3 +197,26 @@ resource "aws_lambda_permission" "apiGw" {
 
   source_arn = "${aws_apigatewayv2_api.telegram.execution_arn}/*/*"
 }
+
+resource "aws_sqs_queue" "sendMessageQueue" {
+  name                      = "send-message-queue"
+  delay_seconds             = 90
+  max_message_size          = 2048
+  message_retention_seconds = 86400
+  receive_wait_time_seconds = 10
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.sendMessageQueueDeadletter.arn
+    maxReceiveCount     = 4
+  })
+}
+
+resource "aws_sqs_queue" "sendMessageQueueDeadletter" {
+  name = "send-message-queue-DLQ"
+  message_retention_seconds = 86400
+}
+
+resource "aws_lambda_event_source_mapping" "sendMessageQueue" {
+  event_source_arn = aws_sqs_queue.sendMessageQueue.arn
+  function_name = aws_lambda_function.sendMessage.arn
+  batch_size = 10
+}

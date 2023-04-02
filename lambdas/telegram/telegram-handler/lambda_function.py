@@ -161,7 +161,7 @@ def broadcast_message(chatId, message, topic):
         'botName': 'configurator'
     }
 
-    response = send_sqs_message(subscribers, payload, 'outgoing-messages')
+    response = send_sqs_message(subscribers, payload, 'send-message-queue')
     return response
 
 
@@ -211,5 +211,5 @@ def send_telegram_message(chatId, message, botName='configurator'):
         'botName': botName,
         'textMessage': message
     }
-    response = send_sqs_message([chatId], payload, 'outgoing-messages')
+    response = send_sqs_message([chatId], payload, 'send-message-queue')
     return response
