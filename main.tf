@@ -2,6 +2,8 @@ locals {
   region = "us-east-1"
   subscribers_table_name = "topic_subscribers"
   telegram_api_name = "telegram"
+  aws_account_id = "020664526196"
+  configurator_bot_token = "5963735642:AAF0YMbVgKEmZksowxX31sXB6Z93IeWfN18"
 }
 
 terraform {
@@ -93,6 +95,12 @@ resource "aws_lambda_function" "telegramHandler" {
   source_code_hash = data.archive_file.lambdaTelegramHandler.output_base64sha256
 
   role = aws_iam_role.telegramHandlerRole.arn
+
+  environment {
+    variables = {
+      AWS_ACCOUNT_ID = local.aws_account_id
+    }
+  }
 }
 
 resource "aws_lambda_function" "sendMessage" {
@@ -107,6 +115,13 @@ resource "aws_lambda_function" "sendMessage" {
   source_code_hash = data.archive_file.lambdaSendMessage.output_base64sha256
 
   role = aws_iam_role.sendMessageRole.arn
+
+  environment {
+    variables = {
+      AWS_ACCOUNT_ID = local.aws_account_id
+      CONFIGURATOR_TELEGRAM_TOKEN = local.configurator_bot_token
+    }
+  }
 }
 
 resource "aws_iam_role" "sendMessageRole" {
@@ -208,6 +223,23 @@ resource "aws_sqs_queue" "sendMessageQueue" {
     deadLetterTargetArn = aws_sqs_queue.sendMessageQueueDeadletter.arn
     maxReceiveCount     = 4
   })
+  policy = <<POLICY
+  {
+    "Version": "2008-10-17",
+    "Id": "__default_policy_ID",
+    "Statement": [
+      {
+        "Sid": "__owner_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::020664526196:root"
+        },
+        "Action": "SQS:*",
+        "Resource": "arn:aws:sqs:sa-east-1:020664526196:telegram-updates"
+      }
+    ]
+  }
+  POLICY
 }
 
 resource "aws_sqs_queue" "sendMessageQueueDeadletter" {

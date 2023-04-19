@@ -192,14 +192,16 @@ def send_sqs_message(recipients, payload, sqsName):
 
     payload['recipients'] = recipients
 
-    jhon = json.dumps(payload)
+    jsonPayload = json.dumps(payload)
 
     logger.info(
-        f'enviando para a fila: {sqsName} /n no url {sqsUrl} /n payload: {jhon}')
+        f'enviando para a fila: {sqsName} /n no url {sqsUrl} /n payload: {jsonPayload}')
 
     response = sqs.send_message(
         QueueUrl=sqsUrl,
-        MessageBody=jhon)
+        MessageBody=jsonPayload)
+    
+    logger.info(f'Resposta recebida: {response}')
     return response
 
 
