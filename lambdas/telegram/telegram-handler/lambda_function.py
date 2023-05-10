@@ -17,7 +17,7 @@ def lambda_handler(event, ctx):
         'stausCode': 200
     }
 
-    logger.info('Recebendo evento do telegram com o payload {}'.format(event))
+    logger.info(f'Recebendo evento do telegram com o payload {event}')
     telegramResponse = "Não entendi seu comando!"
     update = json.loads(event['body'])
 
@@ -39,7 +39,7 @@ def lambda_handler(event, ctx):
     text = message['text']
     chatId = message['chat']['id']
     logger.info(
-        "Identificado os parâmetros: text:{}, chatId:{}".format(text, chatId))
+        f'Identificado os parâmetros: text:{text}, chatId:{chatId}')
     if text.startswith('/'):
         if text == '/start':
             telegramResponse = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot) \n" + \
@@ -52,7 +52,7 @@ def lambda_handler(event, ctx):
         if re.match(r'^/sub ?\n?', text):
             topic = re.sub(r'^/sub ?\n?', '', text, 0).lstrip().lower()
             logger.info(
-                "Identificado o comando para inscrever no tópico {}".format(topic))
+                f'Identificado o comando para inscrever no tópico {topic}')
             if re.match(r'^[a-z0-9_]{1,32}$', topic):
                 add_subscriber(topic, chatId)
                 telegramResponse = f'Ok! Você foi inscrito no tópico {topic}. Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' + \
@@ -68,8 +68,7 @@ def lambda_handler(event, ctx):
                 f'Solicitada a desinscrição do chat {chatId} do tópico {topic}')
             if re.match(r'^[a-z0-9_]{1,32}$', topic):
                 remove_subscriber(topic, chatId)
-                telegramResponse = 'Ok! Sua inscrição do tópico {} foi removida'.format(
-                    topic)
+                telegramResponse = f'Ok! Sua inscrição do tópico {topic} foi removida'
             else:
                 telegramResponse = 'Tópico inválido! Tópicos devem ter apenas caracteres alfanuméricos ou _ e no máximo 32 caracteres'
 
@@ -80,8 +79,7 @@ def lambda_handler(event, ctx):
             topic = match.group(0).strip().lower()[1:]
             topicMessage = re.sub(r'^\.[a-z0-9_]+[ \n]+', '', text)
             if topicMessage:
-                logger.info("Transmitindo mensagem {} para tópico {}".format(
-                    topicMessage, topic))
+                logger.info(f'Transmitindo mensagem {topicMessage} para tópico {topic}')
                 payload = {
                     'text': topicMessage.strip()
                 }
