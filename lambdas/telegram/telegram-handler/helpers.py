@@ -84,16 +84,16 @@ def send_telegram_message(chatId, message, botName='configurator'):
     return response
 
 
-def broadcast_message(chatId, message, topic):
+def broadcast_message(chatId, payload, topic):
     logger.info(
-        f'Divulgando mensagem {message} para o tópico {topic}, vinda do chat {chatId}')
+        f'Divulgando mensagem {payload} para o tópico {topic}, vinda do chat {chatId}')
 
     subscribers = get_subscribers(topic)
     if len(subscribers) == 0:
         return
 
     payload = {
-        'textMessage': f'.{topic}: {message["text"]}',
+        'textMessage': f'.{topic}: {payload["text"]}',
         'botName': 'configurator'
     }
 
