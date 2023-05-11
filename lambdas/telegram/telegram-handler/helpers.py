@@ -14,11 +14,40 @@ table = dynamodb.Table('topic_subscribers')
 def valid_topic(topic):
     return re.match(r'^[a-z0-9_]{1,32}$', topic)
 
+def add_subscriber(topic, chat_id):
+    try:
+        response = table.get_item(
+            Key={
+                'topic': topic,
+                'subscriber_id': chat_id
+            }
+        )
+    except botocore.exceptions.ClientError as e:
+        logger.error(e.response['Error']['Message'])
+    else:
+        if 'Item' not in response:
+            table.put_item(
+                Item={
+                    'topic': topic,
+                    'subscriber_id': chat_id
+                }
+            )
+            return {
+                'statusCode': 200,
+                'body': json.dumps(f'Sua inscrição no tópico {topic} foi confirmada! Quando você receber uma mensagem nesse tópico, ela vai vir assim: \n' +
+                                   f'.{topic}\nmensagem recebida')
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': json.dumps(f'Você já tem uma inscrição no tópico {topic}')
+            }
 
-def subscribe_to_topic(topic, chat_id, add_subscriber):
+
+def subscribe_to_topic(topic, chat_id):
     topic = topic.lstrip().lower()
     if valid_topic(topic):
-        add_subscriber(topic, chat_id)
+        add_subscriber(str(topic), str(chat_id))
         return (
             f'Ok! Você foi inscrito no tópico {topic}. '
             f'Quando você receber uma mensagem nesse tópico, ela vai vir assim:\n'
@@ -64,7 +93,7 @@ def broadcast_message(chatId, message, topic):
         return
 
     payload = {
-        'textMessage': f'.{topic}: {message}',
+        'textMessage': f'.{topic}: {message["text"]}',
         'botName': 'configurator'
     }
 
@@ -73,6 +102,7 @@ def broadcast_message(chatId, message, topic):
 
 
 def get_subscribers(topic):
+    logger.info(f'enviando request para os subscribers do seguinte tópico: {topic}')
     try:
         response = table.query(
             KeyConditionExpression=Key('topic').eq(topic)
@@ -81,6 +111,7 @@ def get_subscribers(topic):
         logger.error(e.response['Error']['Message'])
         return []
     else:
+        logger.info(f'resposta obtida: {response}')
         subscribers = [item['subscriber_id'] for item in response['Items']]
         return subscribers
 

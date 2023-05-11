@@ -8,7 +8,7 @@ def lambda_handler(event, ctx):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.info(
-        f'recebido evento para evnio de mensagem com o payload {event}')
+        f'recebido evento para envio de mensagem com o payload {event}')
     records = event['Records']
     for record in records:
         body = json.loads(record['body'])
