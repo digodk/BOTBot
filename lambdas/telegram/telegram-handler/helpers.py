@@ -6,10 +6,13 @@ import os
 import json
 from boto3.dynamodb.conditions import Key
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+# Set up logger and DynamoDB resource
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('topic_subscribers')
+
+# Set up logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def valid_topic(topic):
     return re.match(r'^[a-z0-9_]{1,32}$', topic)

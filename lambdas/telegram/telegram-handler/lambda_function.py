@@ -10,10 +10,6 @@ SUBSCRIBE_PATTERN = re.compile(r'^/sub ?\n?(.+)')
 UNSUBSCRIBE_PATTERN = re.compile(r'^/unsub ?\n?(.+)')
 BROADCAST_PATTERN = re.compile(r'^\.([a-z0-9_]{1,32})[ \n]+((?!\s+$).+)')
 
-# Setup DynamoDB resource and table fot boto3
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('topic_subscribers')
-
 # Setup logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
