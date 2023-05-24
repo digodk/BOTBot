@@ -45,13 +45,12 @@ def lambda_handler(event, ctx):
         return
 
     # WIP Temporary code that discards any update which is not a text message
-    # TODO Allow to broadcast media other than text
-    # TODO Include command to check subscriptions
     if not 'message' in update:
         return response
 
     message = update['message']
 
+    # TODO Allow to broadcast media other than text
     if not 'text' in message:
         return response
 
@@ -86,7 +85,7 @@ def handle_commands(text, chat_id):
     Returns:
         str: The bot's response to the command.
     """
-
+    # TODO Include command to check subscriptions
     # Handle '/start' command
     if text == '/start':
         return (
