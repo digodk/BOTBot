@@ -1,13 +1,19 @@
+# Defines the primary SQS queue for sending messages.
+# Messages that cannot be processed are moved to the Dead Letter Queue after 4 attempts.
 resource "aws_sqs_queue" "sendMessageQueue" {
   name                      = "send-message-queue"
-  delay_seconds             = 90
-  max_message_size          = 2048
-  message_retention_seconds = 86400
-  receive_wait_time_seconds = 10
+  delay_seconds             = 90     # Delays message delivery for 90 seconds
+  max_message_size          = 2048   # Maximum message size is 2048 bytes
+  message_retention_seconds = 86400  # Messages are retained for 86400 seconds (1 day)
+  receive_wait_time_seconds = 10     # Long polling wait time is 10 seconds
+
+  # Redrive policy defines the Dead Letter Queue and the maximum receive count.
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.sendMessageQueueDeadletter.arn
     maxReceiveCount     = 4
   })
+
+  # Policy that allows the AWS account to perform all SQS actions on this queue.
   policy = <<POLICY
   {
     "Version": "2008-10-17",
@@ -27,11 +33,15 @@ resource "aws_sqs_queue" "sendMessageQueue" {
   POLICY
 }
 
+# Dead Letter Queue (DLQ) associated with the primary sendMessageQueue.
+# Messages that cannot be processed after multiple attempts in the primary queue are sent here.
 resource "aws_sqs_queue" "sendMessageQueueDeadletter" {
   name = "send-message-queue-DLQ"
-  message_retention_seconds = 86400
+  message_retention_seconds = 86400  # Messages are retained for 86400 seconds (1 day)
 }
 
+# Allows the sendMessage Lambda function to be triggered by messages arriving in the sendMessageQueue.
+# The Lambda function processes messages in batches of 10.
 resource "aws_lambda_event_source_mapping" "sendMessageQueue" {
   event_source_arn = aws_sqs_queue.sendMessageQueue.arn
   function_name = aws_lambda_function.sendMessage.arn
