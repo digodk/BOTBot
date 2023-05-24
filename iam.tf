@@ -1,5 +1,5 @@
 # IAM role for the Send Message lambda function.
-resource "aws_iam_role" "sendMessageRole" {
+resource "aws_iam_role" "sendMessage" {
   name = "send-message-role"
 
   # The assume_role_policy is the policy that grants an entity permission to assume the role.
@@ -24,7 +24,7 @@ resource "aws_iam_role" "sendMessageRole" {
 }
 
 # IAM role for the Telegram Handler lambda function.
-resource "aws_iam_role" "telegramHandlerRole" {
+resource "aws_iam_role" "telegramHandler" {
   name = "telegram-handler-role"
 
   # The assume_role_policy is the policy that grants an entity permission to assume the role.
