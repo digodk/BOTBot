@@ -23,9 +23,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Debug print
-        run: echo "Value of TF_VAR_configurator_bot_token is ${{ secrets.CONFIGURATOR_BOT_TOKEN }}"
-
       - name: upload config
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
         id: tf-upload
