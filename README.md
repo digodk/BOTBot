@@ -22,12 +22,15 @@ Nota: O script `helpers.py` interage com AWS DynamoDB e AWS SQS, e esses recurso
     - Publicação de mensagens de texto em tópicos
     - Recebimento de mensagens de texto publicadas
 2. [x] IaC
-    - [ ] Provisão de recursos e deploy de lambdas com Terraform
-3. [ ] CI/CD
-    - [ ] Implementação automática de novas versões
+    - [x] Provisão de recursos e deploy de lambdas com Terraform
+3. [ ] CI/CD (WIP)
+    - [ ] Deploy automático
 4. [ ] Testes Integrados
-    - Desenvolver testes integrados simulando ambiente de nuvem
-5. [ ] Novos Recursos
+    - [ ] Desenvolver testes integrados simulando ambiente de nuvem
+    - [ ] Automação de testes integrados
+5. [ ] Tuning
+    - [ ] Melhoria do tempo de resposta
+6. [ ] Novos Recursos
     - [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
 
 ## Utilização
