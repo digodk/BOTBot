@@ -1,19 +1,24 @@
+# Ignore environment configuration files
 environment.json
-lambdas/telegram/telegram-handler/awsHelper.py
-lambdas/telegram/send-message/awsHelper.py
-lambdas/broadcast-message/awsHelper.py
-terraform/terraform.tfstate
-terraform/.terraform.lock.hcl
-terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/4.46.0/windows_amd64/terraform-provider-aws_v4.46.0_x5.exe
-lambdas/broadcast_message/awsHelper.py
-lambdas/broadcast_message/lambda_function.py
-lambdas/telegram/send_message/awsHelper.py
-lambdas/telegram/telegram_handler/awsHelper.py
-terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/4.57.0/windows_amd64/terraform-provider-aws_v4.57.0_x5.exe
+
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform lock files
 .terraform.lock.hcl
-telegram-handler.zip
-send-message.zip
-.terraform/providers/registry.terraform.io/hashicorp/archive/2.3.0/linux_amd64/terraform-provider-archive_v2.3.0_x5
-.terraform/providers/registry.terraform.io/hashicorp/aws/4.59.0/linux_amd64/terraform-provider-aws_v4.59.0_x5
-*terraform.tfstate*
-.terraform/*
+
+# Ignore Terraform provider plugins
+.terraform/providers/*
+
+# Ignore any zip files
+*.zip
+
+# Ignore Python compiled files and caches
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+
+# Ignore any log files
+*.log
