@@ -34,7 +34,7 @@ resource "aws_lambda_function" "sendMessage" {
   environment {
     variables = {
       AWS_ACCOUNT_ID = local.aws_account_id
-      CONFIGURATOR_TELEGRAM_TOKEN = local.configurator_bot_token
+      CONFIGURATOR_TELEGRAM_TOKEN = var.configurator_bot_token
     }
   }
 }
