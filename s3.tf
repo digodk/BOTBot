@@ -25,13 +25,6 @@ resource "aws_s3_bucket" "lambda" {
   bucket = "telegram-lambda-bucket"
 }
 
-# Sets the access control list (ACL) of the S3 bucket to private.
-# This means that the bucket and its contents can only be accessed by authorized AWS users.
-resource "aws_s3_bucket_acl" "acl" {
-  bucket = aws_s3_bucket.lambda.id
-  acl    = "private"
-}
-
 # Uploads the Telegram handler lambda function ZIP file to the S3 bucket.
 resource "aws_s3_object" "lambdaTelegramHandler" {
   bucket = aws_s3_bucket.lambda.id
