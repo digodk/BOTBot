@@ -28,10 +28,16 @@ Nota: O script `helpers.py` interage com AWS DynamoDB e AWS SQS, e esses recurso
 4. [ ] Testes Integrados
     - [ ] Desenvolver testes integrados simulando ambiente de nuvem
     - [ ] Automação de testes integrados
-5. [ ] Tuning
+5. [ ] Observabilidade
+    - [ ] Prometheus
+    - [ ] Grafana
+6. [ ] Tuning
     - [ ] Melhoria do tempo de resposta
-6. [ ] Novos Recursos
+7. [ ] Futuro
     - [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
+    - [ ] Suporte a markdown do Telegram
+    - [ ] Separar em dois bots, um para config e outro para broadcast
+    - [ ] Throtling da taxa de respostas para ser compatível com os limites do telegram
 
 ## Utilização
 
