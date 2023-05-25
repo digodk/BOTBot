@@ -8,7 +8,9 @@ from helpers import subscribe_to_topic, unsubscribe_from_topic, broadcast_messag
 # Define Regex patterns
 SUBSCRIBE_PATTERN = re.compile(r'^/sub ?\n?(.+)')
 UNSUBSCRIBE_PATTERN = re.compile(r'^/unsub ?\n?(.+)')
+ABOUT_PATTERN = re.compile(r'^/about ?\n?(.+)')
 BROADCAST_PATTERN = re.compile(r'^\.([a-z0-9_]{1,32})[ \n]+((?!\s+$).+)')
+ABOUT_MESSAGE = " "
 
 # Setup logging
 logger = logging.getLogger()
@@ -89,16 +91,7 @@ def handle_commands(text, chat_id):
 
     # Handle '/start' command
     if text == '/start':
-        return (
-            "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)\n"
-            "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo:\n\n"
-            "/sub nome_do_topico\n"
-            "para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _\n\n"
-            "/unsub nome_topico\n"
-            "para você se desinscrever de um tópico.\n\n"
-            ".nome_do_topico sua mensagem de texto\n"
-            "para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem.\n\n"
-        )
+        return (introduction_message())
 
     # Check for '/sub' command and subscribe to the topic
     topic_match = re.match(SUBSCRIBE_PATTERN, text)
@@ -109,6 +102,11 @@ def handle_commands(text, chat_id):
     topic_match = re.match(UNSUBSCRIBE_PATTERN, text)
     if topic_match:
         return unsubscribe_from_topic(topic_match.group(1), chat_id)
+
+    # Check for '/about' command and return the bot's description and a link to the project
+    topic_match = re.match(ABOUT_PATTERN, text)
+    if topic_match:
+        return
 
     return "Não entendi seu comando!"
 
@@ -134,3 +132,23 @@ def handle_broadcast(text, chat_id):
             f'Transmitindo mensagem {topic_message} para tópico {topic}')
         broadcast_message(chat_id, {'text': topic_message.strip()}, topic)
         return 'Ok! Mensagem enviada'
+
+
+def introduction_message():
+    bot_intro = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)"
+    bot_function = "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo:"
+    subscribe_info = "/sub nome_do_topico para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _"
+    unsubscribe_info = "/unsub nome_topico para você se desinscrever de um tópico."
+    message_info = ".nome_do_topico sua mensagem de texto para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem."
+
+    return f"""
+        {bot_intro}
+        {bot_function}
+
+        {subscribe_info}
+
+        {unsubscribe_info}
+
+        {message_info}
+        """
+
