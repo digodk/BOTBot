@@ -30,7 +30,10 @@ Nota: O script `helpers.py` interage com AWS DynamoDB e AWS SQS, e esses recurso
     - [ ] Automação de testes integrados
 5. [ ] Tuning
     - [ ] Melhoria do tempo de resposta
-6. [ ] Novos Recursos
+6. [ ] Observabilidade
+    - [ ] Prometheus
+    - [ ] Grafana
+7. [ ] Novos Recursos
     - [ ] Enviar outras mídias (foto, vídeo, áudio, stickers, gifs)
 
 ## Utilização
