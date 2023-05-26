@@ -40,6 +40,7 @@ Nota: O script `helpers.py` interage com AWS DynamoDB e AWS SQS, e esses recurso
     - [ ] Suporte a markdown do Telegram
     - [ ] Separar em dois bots, um para config e outro para broadcast
     - [ ] Throtling da taxa de respostas para ser compatível com os limites do telegram
+    - [ ] i18n
 
 ## Utilização
 
