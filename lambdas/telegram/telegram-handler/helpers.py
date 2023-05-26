@@ -97,8 +97,47 @@ def subscribe_to_topic(topic, chat_id):
             'ou _ e no máximo 32 caracteres'
         )
 
+def remove_subscriber(topic, chat_id):
+    """
+    Removes a chat id subscription to a topic in the DynamoDB subscriptions table.
 
-def unsubscribe_from_topic(topic, chat_id, remove_subscriber):
+    Args:
+    topic (str): The topic to unsubscribe from
+    chat_id (str): The chat id to remove from the subscription
+
+    Returns:
+        A json response from the call made to AWS using boto3
+    """
+
+    try:
+        response = table.get_item(
+            Key={
+                'topic': topic,
+                'subscriber_id': chat_id
+            }
+        )
+    except botocore.exceptions.ClientError as e:
+        logger.error(e.response['Error']['Message'])
+    else:
+        if 'Item' in response:
+            table.delete_item(
+                Key={
+                    'topic': topic,
+                    'subscriber_id': chat_id
+                }
+            )
+            return {
+                'statusCode': 200,
+                'body': json.dumps(f'Sua inscrição no tépico {topic} foi removida')
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': response
+            }
+
+
+def unsubscribe_from_topic(topic, chat_id):
     """
     Unsubscribe a user from a topic.
 
@@ -159,11 +198,11 @@ def broadcast_message(chatId, payload, topic):
 
     logger.info(
         f'Divulgando mensagem {payload} para o tópico {topic}, vinda do chat {chatId}')
-
+    
+    topic = topic.lstrip().lower()
     subscribers = get_subscribers(topic)
     if len(subscribers) == 0:
         return
-
     payload = {
         'textMessage': f'.{topic}: {payload["text"]}',
         'botName': 'configurator'

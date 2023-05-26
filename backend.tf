@@ -1,9 +1,9 @@
 terraform {
   backend "remote" {
-    organization = "digodk-tutorial"
+    organization = ""
 
     workspaces {
-      name = "bot-bot"
+      name = ""
     }
   }
 }
