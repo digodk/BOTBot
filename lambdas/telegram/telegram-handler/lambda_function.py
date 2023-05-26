@@ -8,9 +8,7 @@ from helpers import subscribe_to_topic, unsubscribe_from_topic, broadcast_messag
 # Define Regex patterns
 SUBSCRIBE_PATTERN = re.compile(r'^/sub ?\n?(.+)')
 UNSUBSCRIBE_PATTERN = re.compile(r'^/unsub ?\n?(.+)')
-ABOUT_PATTERN = re.compile(r'^/about ?\n?(.+)')
 BROADCAST_PATTERN = re.compile(r'^\.([a-z0-9_]{1,32})[ \n]+((?!\s+$).+)')
-ABOUT_MESSAGE = " "
 
 # Setup logging
 logger = logging.getLogger()
@@ -104,9 +102,8 @@ def handle_commands(text, chat_id):
         return unsubscribe_from_topic(topic_match.group(1), chat_id)
 
     # Check for '/about' command and return the bot's description and a link to the project
-    topic_match = re.match(ABOUT_PATTERN, text)
-    if topic_match:
-        return
+    if text == '/about':
+        return about_message()
 
     return "Não entendi seu comando!"
 
@@ -140,6 +137,7 @@ def introduction_message():
     subscribe_info = "/sub nome_do_topico para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _"
     unsubscribe_info = "/unsub nome_topico para você se desinscrever de um tópico."
     message_info = ".nome_do_topico sua mensagem de texto para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem."
+    about_info = "/about para saber mais sobre o BOTBot"
 
     return f"""
         {bot_intro}
@@ -150,5 +148,22 @@ def introduction_message():
         {unsubscribe_info}
 
         {message_info}
+
+        {about_info}
         """
 
+def about_message():
+    """
+    Returns the bot's description and a link to the project.
+    """
+
+    return f"""
+        Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)
+        Este é um projeto de aprendizagem sobre aplicações serverless, ferramentas de cloud e DevOps.
+        O BOTBot é um bot do Telegram projetado para facilitar a inscrição em tópicos e a publicação anônima de mensagens.
+        Os usuários podem se inscrever ou cancelar a inscrição em tópicos, e postar mensagens de texto nesses tópicos.
+        
+        Este projeto usa vários scripts Python e arquivos Terraform para gerenciar os recursos AWS necessários para o bot.
+        
+        Para mais informações, acesse o link do projeto: https://github.com/digodk/BOTBot
+    """
