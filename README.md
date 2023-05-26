@@ -46,6 +46,7 @@ Para um usuário interagir com o bot, ele deve usar os seguintes comandos:
 - `/sub <nome_do_topico>`: Inscrever-se em um tópico. Os tópicos podem ter caracteres alfanuméricos e o símbolo "_".
 - `/unsub <nome_do_topico>`: Cancelar inscrição em um tópico.
 - `.<nome_do_topico> sua mensagem de texto`: Enviar uma mensagem para um tópico. Todos os inscritos receberão uma cópia da mensagem.
+- `/about`: Para saber mais sobre o BOTBot
 
 ## Começando
 
