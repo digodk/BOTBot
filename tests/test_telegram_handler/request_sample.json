@@ -1,0 +1,28 @@
+{
+    "update_id": 510534556,
+    "message": {
+        "message_id": 309,
+        "from": {
+            "id": 54337384,
+            "is_bot": false,
+            "first_name": "Diogo",
+            "username": "digodk",
+            "language_code": "pt-br"
+        },
+        "chat": {
+            "id": 54337384,
+            "first_name": "Diogo",
+            "username": "digodk",
+            "type": "private"
+        },
+        "date": 1684793550,
+        "text": "/start",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 6,
+                "type": "bot_command"
+            }
+        ]
+    }
+}
