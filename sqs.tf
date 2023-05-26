@@ -2,7 +2,7 @@
 # Messages that cannot be processed are moved to the Dead Letter Queue after 4 attempts.
 resource "aws_sqs_queue" "sendMessage" {
   name                      = "send-message-queue"
-  delay_seconds             = 90     # Delays message delivery for 90 seconds
+  delay_seconds             = 0     # Don't delay message delivery
   max_message_size          = 2048   # Maximum message size is 2048 bytes
   message_retention_seconds = 86400  # Messages are retained for 86400 seconds (1 day)
   receive_wait_time_seconds = 10     # Long polling wait time is 10 seconds
