@@ -88,16 +88,7 @@ def handle_commands(text, chat_id):
     # TODO Include command to check subscriptions
     # Handle '/start' command
     if text == '/start':
-        return (
-            "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)\n"
-            "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo:\n\n"
-            "/sub nome_do_topico\n"
-            "para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _\n\n"
-            "/unsub nome_topico\n"
-            "para você se desinscrever de um tópico.\n\n"
-            ".nome_do_topico sua mensagem de texto\n"
-            "para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem.\n\n"
-        )
+        return (introduction_message())
 
     # Check for '/sub' command and subscribe to the topic
     topic_match = re.match(SUBSCRIBE_PATTERN, text)
@@ -108,6 +99,10 @@ def handle_commands(text, chat_id):
     topic_match = re.match(UNSUBSCRIBE_PATTERN, text)
     if topic_match:
         return unsubscribe_from_topic(topic_match.group(1), chat_id)
+
+    # Check for '/about' command and return the bot's description and a link to the project
+    if text == '/about':
+        return about_message()
 
     return "Não entendi seu comando!"
 
@@ -133,3 +128,41 @@ def handle_broadcast(text, chat_id):
             f'Transmitindo mensagem {topic_message} para tópico {topic}')
         broadcast_message(chat_id, {'text': topic_message.strip()}, topic)
         return 'Ok! Mensagem enviada'
+
+
+def introduction_message():
+    bot_intro = "Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)"
+    bot_function = "Eu faço transmissão de mensagens. Você pode tentar os seguintes comandos comigo:"
+    subscribe_info = "/sub nome_do_topico para você se inscrever em um tópico. Tópicos podem ter caracteres alfanuméricos e o símbolo _"
+    unsubscribe_info = "/unsub nome_topico para você se desinscrever de um tópico."
+    message_info = ".nome_do_topico sua mensagem de texto para enviar uma mensagem para um tópico. Todas as pessoas inscritas vão receber uma cópia da mensagem."
+    about_info = "/about para saber mais sobre o BOTBot"
+
+    return f"""
+        {bot_intro}
+        {bot_function}
+
+        {subscribe_info}
+
+        {unsubscribe_info}
+
+        {message_info}
+
+        {about_info}
+        """
+
+def about_message():
+    """
+    Returns the bot's description and a link to the project.
+    """
+
+    return f"""
+        Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)
+        Este é um projeto de aprendizagem sobre aplicações serverless, ferramentas de cloud e DevOps.
+        O BOTBot é um bot do Telegram projetado para facilitar a inscrição em tópicos e a publicação anônima de mensagens.
+        Os usuários podem se inscrever ou cancelar a inscrição em tópicos, e postar mensagens de texto nesses tópicos.
+        
+        Este projeto usa vários scripts Python e arquivos Terraform para gerenciar os recursos AWS necessários para o bot.
+        
+        Para mais informações, acesse o link do projeto: https://github.com/digodk/BOTBot
+    """
