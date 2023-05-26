@@ -198,11 +198,11 @@ def broadcast_message(chatId, payload, topic):
 
     logger.info(
         f'Divulgando mensagem {payload} para o tópico {topic}, vinda do chat {chatId}')
-
+    
+    topic = topic.lstrip().lower()
     subscribers = get_subscribers(topic)
     if len(subscribers) == 0:
         return
-
     payload = {
         'textMessage': f'.{topic}: {payload["text"]}',
         'botName': 'configurator'
