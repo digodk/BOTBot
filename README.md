@@ -3,6 +3,8 @@ O **Broadcast On Topics Bot**
 
 BOTBot é um bot do Telegram projetado para facilitar a inscrição em tópicos e a publicação anônima de mensagens. Os usuários podem se inscrever ou cancelar a inscrição em tópicos, e postar mensagens de texto nesses tópicos.
 
+Para falar com o bot é só ir no [@dotstopsbot](https://t.me/dotstopsbot)
+
 ## Estrutura do Projeto
 
 Este projeto consiste em vários scripts Python e arquivos Terraform que são usados para gerenciar os recursos AWS necessários para o bot.
