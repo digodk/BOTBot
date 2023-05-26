@@ -140,6 +140,7 @@ def introduction_message():
 
     return f"""
         {bot_intro}
+        
         {bot_function}
 
         {subscribe_info}
