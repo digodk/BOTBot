@@ -137,7 +137,7 @@ def remove_subscriber(topic, chat_id):
             }
 
 
-def unsubscribe_from_topic(topic, chat_id, remove_subscriber):
+def unsubscribe_from_topic(topic, chat_id):
     """
     Unsubscribe a user from a topic.
 
