@@ -139,18 +139,18 @@ def introduction_message():
     about_info = "/about para saber mais sobre o BOTBot"
 
     return f"""
-        {bot_intro}
+    {bot_intro}
         
-        {bot_function}
+    {bot_function}
 
-        {subscribe_info}
+    {subscribe_info}
 
-        {unsubscribe_info}
+    {unsubscribe_info}
 
-        {message_info}
+    {message_info}
 
-        {about_info}
-        """
+    {about_info}
+    """
 
 def about_message():
     """
@@ -158,12 +158,12 @@ def about_message():
     """
 
     return f"""
-        Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)
-        Este é um projeto de aprendizagem sobre aplicações serverless, ferramentas de cloud e DevOps.
-        O BOTBot é um bot do Telegram projetado para facilitar a inscrição em tópicos e a publicação anônima de mensagens.
-        Os usuários podem se inscrever ou cancelar a inscrição em tópicos, e postar mensagens de texto nesses tópicos.
+    Olá, eu sou o BOTBot! (Broadcast Over Topics Bot)
+    Este é um projeto de aprendizagem sobre aplicações serverless, ferramentas de cloud e DevOps.
+    O BOTBot é um bot do Telegram projetado para facilitar a inscrição em tópicos e a publicação anônima de mensagens.
+    Os usuários podem se inscrever ou cancelar a inscrição em tópicos, e postar mensagens de texto nesses tópicos.
         
-        Este projeto usa vários scripts Python e arquivos Terraform para gerenciar os recursos AWS necessários para o bot.
+    Este projeto usa vários scripts Python e arquivos Terraform para gerenciar os recursos AWS necessários para o bot.
         
-        Para mais informações, acesse o link do projeto: https://github.com/digodk/BOTBot
+    Para mais informações, acesse o link do projeto: https://github.com/digodk/BOTBot
     """
