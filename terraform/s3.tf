@@ -3,10 +3,10 @@ data "archive_file" "lambdaTelegramHandler" {
   type = "zip"
 
   # The source directory contains the lambda function code.
-  source_dir  = "${path.module}/lambdas/telegram/telegram-handler"
+  source_dir  = "${path.module}/../lambdas/telegram/telegram-handler"
 
   # The output path is where the ZIP file will be stored.
-  output_path = "${path.module}/lambdas/zip-file/telegram-handler.zip"
+  output_path = "${path.module}/../lambdas/zip-file/telegram-handler.zip"
 }
 
 # Creates a ZIP archive of the Send Message lambda function code.
@@ -14,10 +14,10 @@ data "archive_file" "lambdaSendMessage" {
   type = "zip"
 
   # The source directory contains the lambda function code.
-  source_dir = "${path.module}/lambdas/telegram/send-message"
+  source_dir = "${path.module}/../lambdas/telegram/send-message"
 
   # The output path is where the ZIP file will be stored.
-  output_path = "${path.module}/lambdas/zip-file/send-message.zip"
+  output_path = "${path.module}/../lambdas/zip-file/send-message.zip"
 }
 
 # Creates an S3 bucket to store the lambda function ZIP files.
