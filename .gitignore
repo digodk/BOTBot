@@ -9,7 +9,7 @@ environment.json
 .terraform.lock.hcl
 
 # Ignore Terraform provider plugins
-.terraform/providers/*
+terraform/.terraform/providers/*
 
 # Ignore any zip files
 *.zip

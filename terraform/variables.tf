@@ -1,4 +1,3 @@
-
 variable "configurator_bot_token" {
   description = "Telegram token for the configurator bot. Provided by terraform cloud"
 }
